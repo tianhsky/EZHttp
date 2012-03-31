@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'ez_http'
-  s.version     = '1.0.0'
+  s.version     = '1.0.1'
   s.platform 	= Gem::Platform::RUBY
   s.date        = '2012-03-30'
   s.summary     = "Make http/https request easier"
