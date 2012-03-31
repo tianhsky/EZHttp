@@ -11,8 +11,5 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://rubygems.org/gems/ez_http'
   s.extra_rdoc_files   = ["doc/index.html"]
 
-  s.required_rubygems_version = ">= 1.3.6"
-  s.add_development_dependency "openssl"
-  s.add_development_dependency "net/http"
-  s.add_development_dependency "uri"
+  #s.required_rubygems_version = ">= 1.3.6"
 end
