@@ -15,9 +15,9 @@ A helper wrapper around net/http, supports http/https(with/without certificate),
 
 ## Installation
 
-Add the following line to your "Gemfile"
-	gem "ez_http"
-then execute bundle install  
+Add the following line to your "Gemfile"   
+	gem "ez_http"   
+then execute bundle install     
 
 See here for more details:  
 [http://rubygems.org/gems/ez_http](http://rubygems.org/gems/ez_htt "EZHttp RubyGem Page")
