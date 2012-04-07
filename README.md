@@ -11,17 +11,20 @@ A helper wrapper around net/http, supports http/https(with/without certificate),
 	# or with certificate
 	response = EZHttp.Send("https://www.example.com:83/api", {"key1"=>"value1"}, "post", "application/json", "/path_to_cert.pem")
 	
+	# display the response from target
 	puts response.body
 
 ## Installation
 
-Add the following line to your "Gemfile"   
-	gem "ez_http"   
-then execute bundle install     
+Add the following line to your "Gemfile"    
+  
+	gem "ez_http"
+  
+then execute bundle install    
 
-See here for more details:  
-[http://rubygems.org/gems/ez_http](http://rubygems.org/gems/ez_htt "EZHttp RubyGem Page")
+See here for more details: [http://rubygems.org/gems/ez_http](http://rubygems.org/gems/ez_http "EZHttp RubyGem Page")   
 
 ## Author
 
 Tianyu Huang
+
