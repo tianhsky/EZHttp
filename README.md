@@ -20,7 +20,9 @@ Add the following line to your "Gemfile"
   
 	gem "ez_http"
   
-then execute bundle install    
+then execute   
+
+	$ bundle install       
 
 See here for more details: [http://rubygems.org/gems/ez_http](http://rubygems.org/gems/ez_http "EZHttp RubyGem Page")   
 
