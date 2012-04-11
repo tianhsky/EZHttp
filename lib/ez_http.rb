@@ -2,39 +2,48 @@ require "net/http"
 require "uri"
 require "openssl"
 
-# A helper wrapper around net/http, supports http/https(with/without certificate), post/get requests, one method call does everything.
+# A wrapper for ruby net/http, supports http/https, RESTful methods, certificate.
 #  How to use:
-#   response = EZHttp.Send("https://www.example.com:83/api", {"key1"=>"value1"})
-#   or
-#   response = EZHttp.Send("https://www.example.com:83/api", {"key1"=>"value1"}, "post", "application/json")
-#   or
-#   response = EZHttp.Send("https://www.example.com:83/api", {"key1"=>"value1"}, "post", "application/json", "/path_to_cert.pem")
-#   
+#
+#   # send a post request to specified url with the json as data
+#   response = EZHttp.Send("https://www.example.com:83/api",
+#                         {"key1"=>"value1"})
+#
+#   # send a put request to specified url with encoded query string params as data
+#   response = EZHttp.Send("https://www.example.com:83/api",
+#                         "key1=I%27ll+do&key2=He%27+do",
+#                         "put",
+#                         "application/x-www-form-urlencoded")
+#
+#   # specify extra headers
+#   response = EZHttp.Send("https://www.example.com:83/api",
+#                         {"key1"=>"value1"},
+#                         "post",
+#                         {"content-type" => "application/json", "authentication" => "xxxx"})
+#
+#   # use certificate
+#   response = EZHttp.Send("https://www.example.com:83/api",
+#                         {"key1"=>"value1"},
+#                         "post",
+#                         "application/json",
+#                         "/path_to_cert.pem")
+#
+#   # display raw response
 #   puts response.body
 # 
 # @author Tianyu Huang [tianhsky@yahoo.com]
 # 
 module EZHttp
 
-  # Send request to specified url and will return responses
+  # Send http request to specified url and return responses
   # @param [String] url: to send request to
-  # @param [Hash] data: to send
-  # @param [String] method: can be "get"/"post"/"delete"/"put", if nil default is "post"
-  # @param [String] content_type: if nil default is "application/json" 
+  # @param [Hash/String] data: to send
+  # @param [String] method: choose from "get"/"post"/"delete"/"put", if nil default is "post"
+  # @param [Hash] headers: if nil default is {"content-type" => "application/json"}
   # @param [String] cert_path: to the certificate file, set nil if none
   # @return [Net::HTTPResponse] response from remote server, example to access its fields: response.body, response.status
   # 
-  def self.Send(url, data, method="post", content_type="application/json", cert_path=nil)
-
-    # Hack to make it compatible with version <= 1.0.1
-    unless (method.class.to_s == "String")
-      if (method.respond_to?("merge"))
-        temp_data = method
-        method = data
-        data = temp_data
-      end
-    end
-
+  def self.Send(url, data, method="post", headers={"content-type" => "application/json"}, cert_path=nil)
 
     # Parse url
     begin
@@ -52,20 +61,36 @@ module EZHttp
     begin
       method = method || "post"
       case method.downcase
-      when "post"
-        request = Net::HTTP::Post.new(uri.request_uri)
-      when "get"
-        request = Net::HTTP::Get.new(uri.request_uri)
-      when "put"
-        request = Net::HTTP::Put.new(uri.request_uri)
-      when "delete"
-        request = Net::HTTP::Delete.new(uri.request_uri)
-      else
-        request = Net::HTTP::Post.new(uri.request_uri)
+        when "post"
+          request = Net::HTTP::Post.new(uri.request_uri)
+        when "get"
+          request = Net::HTTP::Get.new(uri.request_uri)
+        when "put"
+          request = Net::HTTP::Put.new(uri.request_uri)
+        when "delete"
+          request = Net::HTTP::Delete.new(uri.request_uri)
+        else
+          request = Net::HTTP::Post.new(uri.request_uri)
       end
 
+      # Set form data
       request.set_form_data(data)
-      request["Content-Type"] = content_type || "application/json"
+
+      # Set default content-type
+      request["content-type"] = "application/json"
+
+      # Set headers
+      unless (headers.class.to_s == "String")
+        if (headers.respond_to?("merge"))
+          headers.each do |key, value|
+            request[key.downcase] = value
+          end
+        end
+      else
+        content_type = headers
+        request["content-type"] = content_type
+      end
+
     rescue
       throw "Error in creating request"
     end
