@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+lib = File.expand_path("../../lib/", __FILE__)
+$LOAD_PATH.unshift lib unless $LOAD_PATH.include?(lib)
+
+require "optparse"
+require "ez_http"
+
+########################################################################################################
+# get options from user input
+########################################################################################################
+options = {}
+options[:headers] = nil
+
+optparse = OptionParser.new do |opts|
+  opts.banner = "Send Request: ezhttp --url URL [--data DATA] [--method METHOD] [--type TYPE] [--header HEADERR] [--cert path_to_certificate] \n"
+  opts.banner += "Upload Files: ezhttp --url URL [--files FILE1,FILE2...] [--header HEADERR] [--cert path_to_certificate] \n"
+
+  options[:url] = nil
+  opts.on("-u", "--url URL", "url to send request to") do |d|
+    options[:url] = d
+  end
+
+  options[:data] = nil
+  opts.on("-d", "--data DATA", "encoded query string or stringified json") do |d|
+    options[:data] = d
+  end
+
+  options[:method] = nil
+  opts.on("-m", "--method METHOD", ["get", "post", "put", "delete"], "RESTful method: get/post/put/delete") do |d|
+    options[:method] = d
+  end
+
+  options[:content_type] = nil
+  opts.on("-t", "--type TYPE", "content-type") do |d|
+    options[:content_type] = d
+  end
+
+  opts.on("--header HEADER", "example: authentication:oAuth username=xxx&password=xxx") do |d|
+    puts d
+    options[:headers] = [] if options[:headers].nil?
+    options[:headers].push(d)
+  end
+
+  options[:cert_path] = nil
+  opts.on("-c", "--cert PATH", "path to certificate") do |d|
+    options[:cert_path] = d
+  end
+
+  options[:files] = nil
+  opts.on("-f", "--files FILE1,FILE2...", Array, "list of paths to files") do |d|
+    options[:files] = d
+  end
+
+  opts.on("-h", "--help", "Display this help screen") do
+    puts opts
+    exit
+  end
+
+  opts.on("-v", "--version", "Show version") do |v|
+    puts "ezhttp(aka:ez_http) version #{EZHttp::VERSION}"
+    exit
+  end
+
+
+end
+
+########################################################################################################
+# parse options
+########################################################################################################
+begin
+  optparse.parse!
+rescue OptionParser::ParseError => pe
+  puts pe.message
+  puts optparse
+  exit
+end
+
+if (options[:url].nil? || options[:url].strip.empty?)
+  puts "Required action is not specified"
+  puts optparse
+  exit
+end
+
+
+########################################################################################################
+# send request and retrive response
+########################################################################################################
+
+puts " "
+
+if (!options[:files].nil? && options[:files].length > 0)
+  files = []
+  options[:files].each do |path|
+    file = File.open(path, "rb")
+    name = File.basename(file)
+    content = file.read
+    file.close
+    files.push({"name" => name, "content" => content})
+  end
+
+  response = EZHttp.Upload(options[:url],
+                           files,
+                           options[:headers],
+                           options[:cert_path])
+else
+  response = EZHttp.Send(options[:url],
+                         options[:data],
+                         options[:method],
+                         options[:content_type],
+                         options[:headers],
+                         options[:cert_path])
+end
+
+
+puts response.body
+

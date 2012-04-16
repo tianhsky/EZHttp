@@ -56,42 +56,126 @@
     
     <div id="content"><div id='filecontents'><h1>EZHttp</h1>
 
-<p>A wrapper for ruby net/http, supports http/https, RESTful methods, certificate.</p>
+<p>A wrapper for ruby net/http, supports http/https, RESTful methods, headers, certificate and file uploads.<br>
+It supports both command line and ruby code.   </p>
 
 <h2>How to use it</h2>
 
-<p>send a post request to specified url with the json as data</p>
+<h3>Command Line</h3>
 
-<pre class="code ruby"><code><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Send</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-            <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value1</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<p>Send with query string</p>
+
+<pre class="code ruby"><code>ezhttp \
+--url &quot;https://api.twitter.com/1/followers/ids.json&quot; \
+--method &quot;get&quot; \
+--data &quot;cursor=-1&amp;screen_name=twitterapi&quot;
 </code></pre>
 
-<p>send a put request to specified url with encoded query string params as data</p>
+<p>Send with query string</p>
 
-<pre class="code ruby"><code><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Send</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1=I%27ll+do&amp;key2=He%27+do</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>put</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/x-www-form-urlencoded</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<pre class="code ruby"><code>ezhttp \
+--url &quot;https://api.twitter.com/1/followers/ids.json&amp;cursor=-1&amp;screen_name=twitterapi&quot; \
+--method &quot;get&quot; 
 </code></pre>
 
-<p>specify extra headers</p>
+<p>Send with json</p>
 
-<pre class="code ruby"><code><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Send</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-            <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value1</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span>
-            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>post</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-            <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>content-type</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>authentication</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>xxxx</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<pre class="code ruby"><code>ezhttp \
+--url 'http://127.0.0.1:3000/file/upload_file' \
+--data '{&quot;name&quot;:{&quot;fn&quot;:&quot;xxx&quot;,&quot;ln&quot;:&quot;xxx&quot;}}' \
+--method 'post' \
+--type 'application/json' 
 </code></pre>
 
-<p>use certificate</p>
+<p>Send with header</p>
 
-<pre class="code ruby"><code><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Send</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-            <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>key1</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value1</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span>
-            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>post</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+<pre class="code ruby"><code>ezhttp \
+--url 'https://api.twitter.com/oauth/request_token' \
+--method 'post' \   
+--header 'Authorization: OAuth oauth_nonce=&quot;K7ny27JTpKVsTgdyLdDfmQQWVLERj2zAK5BslRsqyw&quot;, oauth_callback=&quot;http%3A%2F%2Fmyapp.com%3A3005%2Ftwitter%2Fprocess_callback&quot;, oauth_signature_method=&quot;HMAC-SHA1&quot;, oauth_timestamp=&quot;1300228849&quot;, oauth_consumer_key=&quot;OqEqJeafRSF11jBMStrZz&quot;, oauth_signature=&quot;Pc%2BMLdv028fxCErFyi8KXFM%2BddU%3D&quot;, oauth_version=&quot;1.0&quot;'
+</code></pre>
+
+<p>Upload file</p>
+
+<pre class="code ruby"><code>ezhttp \
+--url 'http://127.0.0.1:3000/file/upload_file' \
+--files 'path_to_file.png'
+</code></pre>
+
+<p>Upload multiple files with header</p>
+
+<pre class="code ruby"><code>ezhttp \
+--url 'http://127.0.0.1:3000/file/upload_file' \
+--files 'path_to_file1.zip','path_to_file2.jpg' \
+--header 'authorization:Basic Zvsdwegbdgegsdv0xvsd='
+</code></pre>
+
+<h3>Ruby</h3>
+
+<p>Send with encoded query string as data</p>
+
+<pre class="code ruby"><code><span class='comment'># Post request
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Post</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user_id=12345&amp;token=sdfwD12g%7Ecc</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+<span class='comment'># Get request
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Get</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://www.example.com/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user_id=12345&amp;token=sdfwD12g%7Ecc</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+<span class='comment'># OR
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Get</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://www.example.com/api?user_id=12345&amp;token=sdfwD12g%7Ecc</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Send with hash as data</p>
+
+<pre class="code ruby"><code><span class='comment'># Post request
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Post</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name1</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name2</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value2</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span>
+
+<span class='comment'># Put request
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Put</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name1</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name2</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value2</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Send with extra headers</p>
+
+<pre class="code ruby"><code><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Post</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user_id=12345&amp;token=sdfwD12g%7Ecc</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='kw'>nil</span><span class='comma'>,</span>
+            <span class='lbracket'>[</span>
+                <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>authentication:oAuth username=xxx&amp;password=xxx</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+                <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>other_header:other_values</span><span class='tstring_end'>&quot;</span></span>
+            <span class='rbracket'>]</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Send with pem certificate</p>
+
+<pre class="code ruby"><code><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Delete</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>user_id</span><span class='tstring_end'>&quot;</span></span><span class='op'>=&gt;</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>12345</span><span class='tstring_end'>&quot;</span></span><span class='rbrace'>}</span><span class='comma'>,</span>
             <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>application/json</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='kw'>nil</span><span class='comma'>,</span>
             <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>/path_to_cert.pem</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 </code></pre>
 
-<p>display raw response</p>
+<p>Upload file(s)</p>
+
+<pre class="code ruby"><code><span class='comment'># 
+</span><span class='id identifier rubyid_files'>files</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+<span class='id identifier rubyid_file'>file</span> <span class='op'>=</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_open'>open</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>path_to_file.extension</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>rb</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_files'>files</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span><span class='lparen'>(</span><span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_file'>file</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>content</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_file'>file</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='rbrace'>}</span><span class='rparen'>)</span>
+<span class='id identifier rubyid_file'>file</span><span class='period'>.</span><span class='id identifier rubyid_close'>close</span>
+
+<span class='comment'># simply upload file
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Upload</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='id identifier rubyid_files'>files</span><span class='rparen'>)</span>
+
+<span class='comment'># upload file with headers
+</span><span class='id identifier rubyid_response'>response</span> <span class='op'>=</span> <span class='const'>EZHttp</span><span class='period'>.</span><span class='const'>Upload</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>https://www.example.com:83/api</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+            <span class='id identifier rubyid_files'>files</span><span class='comma'>,</span>
+            <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>authorization:Basic Zvsdwegbdgegsdv0xvsd=</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+</code></pre>
+
+<p>Display response</p>
 
 <pre class="code ruby"><code><span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_response'>response</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span>
 </code></pre>
@@ -116,7 +200,7 @@
 </div></div>
     
     <div id="footer">
-  Generated on Wed Apr 11 00:18:56 2012 by 
+  Generated on Mon Apr 16 02:14:48 2012 by 
   <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.7.5 (ruby-1.9.3).
 </div>

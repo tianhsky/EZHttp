@@ -1,37 +1,115 @@
 # EZHttp
 
-A wrapper for ruby net/http, supports http/https, RESTful methods, certificate.
+A wrapper for ruby net/http, supports http/https, RESTful methods, headers, certificate and file uploads.     
+It supports both command line and ruby code.   
 
 ## How to use it
 
-send a post request to specified url with the json as data
+### Command Line
 
-	response = EZHttp.Send("https://www.example.com:83/api",
-				{"key1"=>"value1"})
+Send with query string
 
-send a put request to specified url with encoded query string params as data
+	ezhttp \
+	--url "https://api.twitter.com/1/followers/ids.json" \
+	--method "get" \
+	--data "cursor=-1&screen_name=twitterapi"
 
-	response = EZHttp.Send("https://www.example.com:83/api",
-				"key1=I%27ll+do&key2=He%27+do",
-				"put",
-				"application/x-www-form-urlencoded")
+Send with query string
 
-specify extra headers
+	ezhttp \
+	--url "https://api.twitter.com/1/followers/ids.json&cursor=-1&screen_name=twitterapi" \
+	--method "get" 
 
-	response = EZHttp.Send("https://www.example.com:83/api",
-				{"key1"=>"value1"},
-				"post",
-				{"content-type" => "application/json", "authentication" => "xxxx"})
+Send with json
 
-use certificate
+	ezhttp \
+	--url 'http://127.0.0.1:3000/file/upload_file' \
+	--data '{"name":{"fn":"xxx","ln":"xxx"}}' \
+	--method 'post' \
+	--type 'application/json' 
 
-	response = EZHttp.Send("https://www.example.com:83/api",
-				{"key1"=>"value1"},
-				"post",
+Send with header
+
+	ezhttp \
+	--url 'https://api.twitter.com/oauth/request_token' \
+	--method 'post' \	
+	--header 'Authorization: OAuth oauth_nonce="K7ny27JTpKVsTgdyLdDfmQQWVLERj2zAK5BslRsqyw", oauth_callback="http%3A%2F%2Fmyapp.com%3A3005%2Ftwitter%2Fprocess_callback", oauth_signature_method="HMAC-SHA1", oauth_timestamp="1300228849", oauth_consumer_key="OqEqJeafRSF11jBMStrZz", oauth_signature="Pc%2BMLdv028fxCErFyi8KXFM%2BddU%3D", oauth_version="1.0"'
+
+
+Upload file
+
+	ezhttp \
+	--url 'http://127.0.0.1:3000/file/upload_file' \
+	--files 'path_to_file.png'
+
+Upload multiple files with header
+
+	ezhttp \
+	--url 'http://127.0.0.1:3000/file/upload_file' \
+	--files 'path_to_file1.zip','path_to_file2.jpg' \
+	--header 'authorization:Basic Zvsdwegbdgegsdv0xvsd='
+
+### Ruby
+
+Send with encoded query string as data
+
+	# Post request
+	response = EZHttp.Post("https://www.example.com:83/api",
+				"user_id=12345&token=sdfwD12g%7Ecc")
+
+	# Get request
+	response = EZHttp.Get("http://www.example.com/api",
+				"user_id=12345&token=sdfwD12g%7Ecc")
+
+	# OR
+	response = EZHttp.Get("http://www.example.com/api?user_id=12345&token=sdfwD12g%7Ecc")
+
+Send with hash as data
+ 
+	# Post request
+	response = EZHttp.Post("https://www.example.com:83/api",
+				{"name1"=>"value", "name2" => "value2"})
+
+	# Put request
+	response = EZHttp.Put("https://www.example.com:83/api",
+				{"name1"=>"value", "name2" => "value2"})
+
+Send with extra headers
+
+	response = EZHttp.Post("https://www.example.com:83/api",
+				"user_id=12345&token=sdfwD12g%7Ecc",
+				nil,
+				[
+					"authentication:oAuth username=xxx&password=xxx",
+					"other_header:other_values"
+				])
+
+Send with pem certificate
+
+	response = EZHttp.Delete("https://www.example.com:83/api",
+				{"user_id"=>"12345"},
 				"application/json",
+				nil,
 				"/path_to_cert.pem")
 
-display raw response
+Upload file(s)
+
+	# 
+	files = []
+	file = File.open("path_to_file.extension", "rb")
+	files.push({"name" => File.basename(file), "content" => file.read})
+	file.close
+
+	# simply upload file
+	response = EZHttp.Upload("https://www.example.com:83/api",
+				files)
+
+	# upload file with headers
+	response = EZHttp.Upload("https://www.example.com:83/api",
+				files,
+				["authorization:Basic Zvsdwegbdgegsdv0xvsd="])
+
+Display response
 
 	puts response.body
 
