@@ -1,4 +1,6 @@
 language: ruby
 rvm:
   - 1.9.3
-script: rspec spec
+script: 
+ gem install rspec
+ rspec spec
