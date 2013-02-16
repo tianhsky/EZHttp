@@ -3,4 +3,4 @@ rvm:
   - 1.9.3
 script: 
  - gem install rspec
- - rspec spec
+ - rspec spec -fn

@@ -7,8 +7,8 @@ describe EZHttp do
 			@response = EZHttp.Get("http://www.google.com")
 		end
 		
-		it "should receive response with 200 http status code" do
-			@response.code.should eql "200"
+		it "should receive response with 2xx(success)/3xx(found) http status code" do
+			@response.code.should start_with "2" || @response.code.should start_with "3"
 		end
 		
 		it "should receive response with non-empty body" do
