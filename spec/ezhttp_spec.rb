@@ -8,7 +8,7 @@ describe EZHttp do
 		end
 		
 		it "should receive response with 2xx(success)/3xx(found) http status code" do
-			@response.code.should start_with "2" || @response.code.should start_with "3"
+			@response.code.should be_success_or_found
 		end
 		
 		it "should receive response with non-empty body" do
@@ -16,13 +16,13 @@ describe EZHttp do
 		end
 	end
 	
-	describe "Send a Get request to http://www.google.com/non_exist_page" do
+	describe "Send a Get request to http://www.google.com/non_existent_page" do
 		before :all do
-			@response = EZHttp.Get("http://www.google.com/non_exist_page")
+			@response = EZHttp.Get("http://www.google.com/non_existent_page")
 		end
 		
-		it "should receive response with 404 http status code" do
-			@response.code.should eql "404"
+		it "should receive response with 404(not found) http status code" do
+			@response.code.should be_not_found
 		end
 	end
 		
