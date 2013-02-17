@@ -1,4 +1,4 @@
-require_relative '../lib/ez_http'
+require_relative '../../lib/ez_http'
 
 RSpec::Matchers.define :be_success_or_found do |expected|
   match do |actual|
