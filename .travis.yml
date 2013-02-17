@@ -4,4 +4,4 @@ rvm:
 before_script: 
  - gem install rspec
 script:
- - rake rspec
+ - rake
