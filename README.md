@@ -1,6 +1,8 @@
-[![Build Status](https://travis-ci.org/tianhsky/EZHttp.png?branch=master)](https://travis-ci.org/tianhsky/EZHttp)
 
 # EZHttp
+
+[![Build Status](https://travis-ci.org/tianhsky/EZHttp.png?branch=master)](https://travis-ci.org/tianhsky/EZHttp)
+[![Dependency Status](https://gemnasium.com/tianhsky/EZHttp.png)](https://gemnasium.com/tianhsky/EZHttp)
 
 A wrapper for ruby net/http, supports http/https, RESTful methods, headers, certificate and file uploads.     
 It supports both command line and ruby code.   
